@@ -1,0 +1,1184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="A daily thanksgiving journal. Finish the sentence: Are You not the one who...">
+<meta name="theme-color" content="#EAF7FE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#050B3A" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Are You Not">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Are You Not The One</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap">
+<style>
+/* Layout: one narrow journal-page column. The composer is the next blank line, the list below reads as ruled lines grouped by day and numbered in the order they were written. */
+:root {
+  --bg: #EAF7FE;
+  --surface: #FFFFFF;
+  --ink: #0A1052;
+  --muted: #4C5F8F;
+  --line: #CFE6F5;
+  --accent: #FFB109;
+  --on-accent: #0A1052;
+  --accent-ink: #0A63B5;
+  --danger: #A3322B;
+  --glow: rgba(7, 201, 243, 0.22);
+  /* Colours for the saved image and PDF. These stay light so they print well in either theme. */
+  --ex-paper: #FFFFFF;
+  --ex-ink: #0A1052;
+  --ex-muted: #4C5F8F;
+  --ex-line: #CFE6F5;
+  --ex-accent: #FFB109;
+  --ex-accent-ink: #0A63B5;
+  --ex-band: #02348F;
+  --ex-band-ink: #FFFFFF;
+  --ex-eyebrow: #9CEFF6;
+  --display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --body: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #050B3A;
+    --surface: #0C1757;
+    --ink: #EAF6FF;
+    --muted: #9DB6E3;
+    --line: #1B2F86;
+    --accent: #FFB109;
+    --on-accent: #0A1052;
+    --accent-ink: #5DD6FA;
+    --danger: #FF8D84;
+    --glow: rgba(7, 147, 223, 0.30);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #050B3A;
+  --surface: #0C1757;
+  --ink: #EAF6FF;
+  --muted: #9DB6E3;
+  --line: #1B2F86;
+  --accent: #FFB109;
+  --on-accent: #0A1052;
+  --accent-ink: #5DD6FA;
+  --danger: #FF8D84;
+  --glow: rgba(7, 147, 223, 0.30);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background-image: radial-gradient(70% 320px at 50% 0, var(--glow), transparent);
+  background-repeat: no-repeat;
+}
+.wrap { max-width: 40rem; margin-inline: auto; display: flex; flex-direction: column; gap: 32px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+
+.eyebrow { margin: 0 0 10px; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+h1 {
+  margin: 0; font-family: var(--display); font-weight: 400; font-style: italic;
+  font-size: clamp(2.5rem, 10vw, 3.75rem); line-height: 1.02; letter-spacing: -0.01em; text-wrap: balance;
+}
+h1 em { font-style: italic; font-weight: 500; color: var(--accent-ink); }
+.sub { margin: 14px 0 0; max-width: 34rem; color: var(--muted); font-size: 1.02rem; }
+
+.stats { display: flex; flex-wrap: wrap; gap: 6px 26px; margin-top: 20px; }
+.stat { display: flex; align-items: baseline; gap: 8px; }
+.stat .n { font-family: var(--display); font-size: 1.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat .l { font-size: 0.8rem; color: var(--muted); }
+
+.composer { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 18px 18px; display: flex; flex-direction: column; gap: 12px; }
+.stem { font-family: var(--display); font-style: italic; font-size: 1.2rem; color: var(--muted); }
+textarea {
+  width: 100%; min-height: 4.2rem; resize: vertical; background: transparent; color: var(--ink);
+  border: 0; border-bottom: 1.5px solid var(--line); border-radius: 0; padding: 4px 0 8px;
+  font-family: var(--display); font-size: 1.4rem; line-height: 1.35;
+}
+textarea::placeholder { color: var(--muted); opacity: 0.65; }
+textarea:focus-visible { outline: none; border-bottom-color: var(--accent-ink); box-shadow: 0 2px 0 0 var(--accent-ink); }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
+.msg { min-width: 0; font-size: 0.85rem; color: var(--muted); }
+.msg.warn { color: var(--danger); }
+
+.btn { border: 1px solid var(--line); background: transparent; border-radius: 10px; padding: 10px 16px; font-weight: 500; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.05); }
+.btn.small { padding: 7px 12px; font-size: 0.875rem; }
+.btn[disabled] { opacity: 0.45; cursor: default; }
+
+.mini { margin: 0; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.starters { display: flex; flex-direction: column; gap: 8px; padding-top: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 7px 13px; font-size: 0.875rem; }
+.chip:hover { border-color: var(--accent-ink); color: var(--accent-ink); }
+
+.listhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+h2 { margin: 0; font-family: var(--display); font-weight: 500; font-size: 1.7rem; }
+.tools { display: flex; gap: 8px; }
+
+.export { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 18px; display: flex; flex-direction: column; gap: 12px; }
+.export textarea { border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-family: var(--body); font-size: 0.9rem; min-height: 9rem; line-height: 1.5; }
+
+.banner { background: var(--surface); border: 1px solid var(--accent); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 0 0 4px var(--glow); }
+.banner-text { margin: 0; font-family: var(--display); font-style: italic; font-size: 1.5rem; line-height: 1.3; overflow-wrap: anywhere; text-wrap: balance; }
+
+.check { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.check input { width: 1.2rem; height: 1.2rem; accent-color: var(--accent-ink); }
+.rem-body { display: flex; flex-direction: column; gap: 16px; }
+.fs { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.fs legend, .fs > label { padding: 0; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+.times { display: flex; flex-direction: column; gap: 8px; }
+.time-row { display: flex; align-items: center; gap: 12px; }
+input[type="time"], input[type="text"], select {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; max-width: 100%;
+}
+select, input[type="text"] { width: 100%; }
+.note { margin: 0; font-size: 0.85rem; color: var(--muted); max-width: 34rem; }
+
+.day { margin-top: 22px; }
+.dayhead { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 1.5px solid var(--ink); }
+.dayhead span { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; }
+.dayhead .c { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+.lines { list-style: none; margin: 0; padding: 0; }
+.line { display: grid; grid-template-columns: 2.2rem minmax(0, 1fr); gap: 4px 8px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.num { font-family: var(--display); font-size: 1rem; color: var(--accent-ink); font-variant-numeric: tabular-nums; padding-top: 3px; }
+.sentence { margin: 0; font-family: var(--display); font-size: 1.3rem; line-height: 1.38; overflow-wrap: anywhere; }
+.sentence .pre { color: var(--muted); font-style: italic; }
+.row-actions { grid-column: 2; display: flex; gap: 14px; }
+.link { background: none; border: 0; padding: 4px 0; font-size: 0.8rem; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.link:hover { color: var(--ink); }
+.link.danger { color: var(--danger); }
+
+.empty .mini { margin-bottom: 4px; }
+.example { opacity: 0.72; }
+.example .num { color: var(--muted); }
+.empty-note { margin: 16px 0 0; color: var(--muted); font-size: 0.95rem; }
+
+footer { color: var(--muted); font-size: 0.82rem; display: flex; flex-direction: column; gap: 6px; }
+footer p { margin: 0; max-width: 34rem; }
+.store-warn { color: var(--danger); }
+
+.rt {
+  position: fixed; inset: 0; z-index: 10; background: var(--bg);
+  background-image: radial-gradient(60% 45% at 50% 0, var(--glow), transparent);
+  display: flex; flex-direction: column;
+  padding-top: max(20px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.rt-top, .rt-nav { width: 100%; max-width: 40rem; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.rt-body { flex: 1; min-height: 0; overflow-y: auto; display: flex; align-items: center; width: 100%; max-width: 40rem; margin-inline: auto; padding-block: 16px; }
+.rt-text { margin: 0; font-family: var(--display); font-size: clamp(1.8rem, 6.5vw, 3rem); line-height: 1.22; overflow-wrap: anywhere; }
+.rt-text .pre { display: block; font-style: italic; color: var(--muted); font-size: 0.7em; margin-bottom: 0.3em; }
+.rt-nav .btn { flex: 1; padding-block: 14px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+</style>
+
+</head>
+<body>
+<main class="wrap" id="app">
+  <header>
+    <p class="eyebrow">Thanksgiving journal</p>
+    <h1>Are You not <em>the one</em>?</h1>
+    <p class="sub">Finish the sentence, one line at a time. Day by day it becomes your own list of the goodness of God, ready to read back and give thanks again.</p>
+    <div class="stats" id="stats" aria-label="Your progress"></div>
+  </header>
+
+  <section id="banner" class="banner" role="status" aria-live="polite" hidden>
+    <p id="bannerText" class="banner-text"></p>
+    <div class="actions">
+      <button type="button" id="bannerWrite" class="btn primary">Write my thanks</button>
+      <button type="button" id="bannerLater" class="btn">Not now</button>
+    </div>
+  </section>
+
+  <form id="f" class="composer" autocomplete="off">
+    <label for="t" class="stem">Are You not the one who</label>
+    <textarea id="t" rows="2" placeholder="woke me up this morning" enterkeyhint="done" maxlength="500"></textarea>
+    <div class="actions">
+      <button type="submit" id="add" class="btn primary">Add to my list</button>
+      <button type="button" id="cancel" class="btn" hidden>Cancel</button>
+      <span id="msg" class="msg" role="status" aria-live="polite"></span>
+    </div>
+    <div class="starters">
+      <p class="mini">Need a place to start?</p>
+      <div id="chips" class="chips"></div>
+    </div>
+  </form>
+
+  <section aria-labelledby="lh">
+    <div class="listhead">
+      <h2 id="lh">My list</h2>
+      <div class="tools">
+        <button type="button" id="rem" class="btn small">Reminders</button>
+        <button type="button" id="read" class="btn small">Read through</button>
+        <button type="button" id="exp" class="btn small">Export</button>
+      </div>
+    </div>
+
+    <section id="remPanel" class="export" aria-label="Reminders" hidden>
+      <label class="check"><input type="checkbox" id="remOn"><span>Remind me to give thanks</span></label>
+      <div id="remBody" class="rem-body">
+        <fieldset class="fs">
+          <legend class="mini">Days</legend>
+          <div id="remDays" class="chips"></div>
+        </fieldset>
+        <fieldset class="fs">
+          <legend class="mini">Times</legend>
+          <div id="remTimes" class="times"></div>
+          <button type="button" id="addTime" class="btn small">Add a time</button>
+        </fieldset>
+        <div class="fs" style="align-items: stretch;">
+          <label for="remMsg" class="mini">Reminder message</label>
+          <select id="remMsg"></select>
+          <input type="text" id="remCustom" maxlength="120" placeholder="Write your own reminder" aria-label="Your own reminder message" hidden>
+        </div>
+        <p id="remNext" class="msg" role="status" aria-live="polite"></p>
+      </div>
+      <p class="note">Reminders appear on this screen while the app is open. They cannot buzz your phone when the app is closed, so for that, set a phone alarm with the same message.</p>
+      <div class="actions">
+        <button type="button" id="remTest" class="btn small">Show me a reminder now</button>
+        <button type="button" id="closeRem" class="btn small">Close</button>
+      </div>
+    </section>
+
+    <section id="exportPanel" class="export" aria-label="Save or share your list" hidden>
+      <p class="mini">Save or share your list</p>
+      <div class="actions">
+        <button type="button" id="saveImg" class="btn primary" disabled>Save as image</button>
+        <button type="button" id="savePdf" class="btn primary" disabled>Save as PDF</button>
+        <button type="button" id="copy" class="btn">Copy text</button>
+      </div>
+      <p id="exportMsg" class="msg" role="status" aria-live="polite"></p>
+      <label for="exportText" class="mini">Your list as text</label>
+      <textarea id="exportText" readonly></textarea>
+      <div class="actions">
+        <button type="button" id="closeExport" class="btn small">Close</button>
+      </div>
+    </section>
+
+    <div id="list"></div>
+  </section>
+
+  <footer>
+    <p id="storeNote">Your list is saved on this device, in this browser only. It is private to you. Use Export now and then to keep a copy, for a physical journal or a backup.</p>
+    <p id="installTip">To keep it on your phone: on Android, open the browser menu and choose Install app or Add to Home screen. On Samsung phones, open this page in Chrome first. On iPhone, tap Share, then Add to Home Screen. <button type="button" id="installBtn" class="btn small" hidden>Install app</button></p>
+    <p>Inspired by the thanksgiving journal of the Hallelujah Challenge.</p>
+  </footer>
+</main>
+
+<div id="rt" class="rt" role="dialog" aria-modal="true" aria-label="Read through your list" hidden>
+  <div class="rt-top">
+    <span id="rtCount" class="mini"></span>
+    <button type="button" id="rtClose" class="btn small">Close</button>
+  </div>
+  <div class="rt-body"><p id="rtText" class="rt-text"></p></div>
+  <div class="rt-nav">
+    <button type="button" id="rtPrev" class="btn">Previous</button>
+    <button type="button" id="rtNext" class="btn primary">Next</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KEY = 'aytno.v1';
+  var STEM = 'Are You not the one who';
+  var STARTERS = [
+    'woke me up this morning',
+    'kept my family safe today',
+    'provided when I had nothing',
+    'brought me this far',
+    'answered before I called',
+    'carried me through this week',
+    'opened a door no one could shut',
+    'healed me'
+  ];
+  var EXAMPLES = [
+    'made a way when there was no way',
+    'kept me through the night',
+    'turned my mourning into dancing'
+  ];
+
+  var entries = [];
+  var storageOK = true;
+  var editingId = null;
+  var confirmId = null;
+  var confirmTimer = null;
+  var rtIndex = 0;
+  var rtItems = [];
+  var lastFocus = null;
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function dayKey(ts) { var d = new Date(ts); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  function clean(raw) {
+    var t = String(raw).replace(/\s+/g, ' ').trim();
+    t = t.replace(/^are you not the one\s*/i, '');
+    t = t.replace(/^who\s+/i, '');
+    t = t.replace(/[\s.?!…]+$/, '');
+    return t;
+  }
+
+  function load() {
+    try {
+      localStorage.setItem(KEY + '.probe', '1');
+      localStorage.removeItem(KEY + '.probe');
+    } catch (e) { storageOK = false; }
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var a = JSON.parse(raw);
+        if (Array.isArray(a)) {
+          entries = a.filter(function (e) {
+            return e && typeof e.text === 'string' && typeof e.ts === 'number' && typeof e.id === 'string';
+          });
+        }
+      }
+    } catch (e) { /* start empty */ }
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(entries)); }
+    catch (e) { storageOK = false; }
+    renderStoreNote();
+  }
+  function renderStoreNote() {
+    var n = $('storeNote');
+    if (storageOK) {
+      n.className = '';
+      n.textContent = 'Your list is saved on this device, in this browser only. It is private to you. Use Export now and then to keep a copy, for a physical journal or a backup.';
+    } else {
+      n.className = 'store-warn';
+      n.textContent = 'This browser is not keeping your list between visits. Use Export to copy it before you close the page.';
+    }
+  }
+
+  function streak() {
+    var days = {};
+    entries.forEach(function (e) { days[dayKey(e.ts)] = true; });
+    var d = new Date(); d.setHours(12, 0, 0, 0);
+    if (!days[dayKey(d.getTime())]) {
+      d.setDate(d.getDate() - 1);
+      if (!days[dayKey(d.getTime())]) return 0;
+    }
+    var n = 0;
+    while (days[dayKey(d.getTime())]) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+
+  function renderStats() {
+    var host = $('stats'); host.replaceChildren();
+    var today = dayKey(Date.now());
+    var todayCount = entries.filter(function (e) { return dayKey(e.ts) === today; }).length;
+    [[streak(), 'day streak'], [todayCount, 'added today'], [entries.length, 'in my list']].forEach(function (p) {
+      var s = el('div', 'stat');
+      s.appendChild(el('span', 'n', String(p[0])));
+      s.appendChild(el('span', 'l', p[1]));
+      host.appendChild(s);
+    });
+  }
+
+  function dayLabel(key) {
+    var parts = key.split('-').map(Number);
+    var dt = new Date(parts[0], parts[1] - 1, parts[2]);
+    var s = dt.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+    var now = new Date(); now.setHours(12, 0, 0, 0);
+    if (key === dayKey(now.getTime())) return 'Today · ' + s;
+    now.setDate(now.getDate() - 1);
+    if (key === dayKey(now.getTime())) return 'Yesterday · ' + s;
+    return s;
+  }
+
+  function sentence(text) {
+    var p = el('p', 'sentence');
+    p.appendChild(el('span', 'pre', STEM + ' '));
+    p.appendChild(el('span', 'rest', text + '?'));
+    return p;
+  }
+
+  function renderList() {
+    var host = $('list'); host.replaceChildren();
+    $('read').disabled = !entries.length;
+    $('exp').disabled = !entries.length;
+
+    if (!entries.length) {
+      var empty = el('div', 'empty');
+      empty.appendChild(el('p', 'mini', 'Examples, not yours yet'));
+      var ol = el('ol', 'lines');
+      EXAMPLES.forEach(function (t, i) {
+        var li = el('li', 'line example');
+        li.appendChild(el('span', 'num', String(i + 1)));
+        li.appendChild(sentence(t));
+        ol.appendChild(li);
+      });
+      empty.appendChild(ol);
+      empty.appendChild(el('p', 'empty-note', 'Write your first line above. It will appear here, and every day you add more.'));
+      host.appendChild(empty);
+      return;
+    }
+
+    var sorted = entries.slice().sort(function (a, b) { return b.ts - a.ts; });
+    var order = []; var groups = {};
+    sorted.forEach(function (e) {
+      var k = dayKey(e.ts);
+      if (!groups[k]) { groups[k] = []; order.push(k); }
+      groups[k].push(e);
+    });
+
+    order.forEach(function (k) {
+      var items = groups[k];
+      var sec = el('section', 'day');
+      var head = el('div', 'dayhead');
+      head.appendChild(el('span', '', dayLabel(k)));
+      head.appendChild(el('span', 'c', items.length + (items.length === 1 ? ' line' : ' lines')));
+      sec.appendChild(head);
+      var ol = el('ol', 'lines');
+      items.forEach(function (e, i) {
+        var li = el('li', 'line');
+        li.appendChild(el('span', 'num', String(items.length - i)));
+        li.appendChild(sentence(e.text));
+        var acts = el('div', 'row-actions');
+        var edit = el('button', 'link', 'Edit'); edit.type = 'button';
+        edit.addEventListener('click', function () { startEdit(e.id); });
+        var del = el('button', 'link danger', confirmId === e.id ? 'Tap again to delete' : 'Delete'); del.type = 'button';
+        del.addEventListener('click', function () { removeEntry(e.id); });
+        acts.appendChild(edit); acts.appendChild(del);
+        li.appendChild(acts);
+        ol.appendChild(li);
+      });
+      sec.appendChild(ol);
+      host.appendChild(sec);
+    });
+  }
+
+  function renderAll() {
+    renderStats(); renderList();
+    if (!$('exportPanel').hidden) { $('exportText').value = exportText(); prepareExport(); }
+    else { exportFiles = null; exportRun++; }
+  }
+
+  function setMsg(text, warn) {
+    var m = $('msg'); m.textContent = text || ''; m.className = 'msg' + (warn ? ' warn' : '');
+  }
+
+  function resetComposer() {
+    editingId = null;
+    $('t').value = '';
+    $('add').textContent = 'Add to my list';
+    $('cancel').hidden = true;
+  }
+
+  function startEdit(id) {
+    var e = entries.find(function (x) { return x.id === id; });
+    if (!e) return;
+    editingId = id;
+    $('t').value = e.text;
+    $('add').textContent = 'Save change';
+    $('cancel').hidden = false;
+    setMsg('Editing one line.');
+    $('f').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    $('t').focus();
+  }
+
+  function removeEntry(id) {
+    if (confirmId !== id) {
+      confirmId = id;
+      clearTimeout(confirmTimer);
+      confirmTimer = setTimeout(function () { confirmId = null; renderList(); }, 3500);
+      renderList();
+      return;
+    }
+    clearTimeout(confirmTimer);
+    confirmId = null;
+    entries = entries.filter(function (x) { return x.id !== id; });
+    if (editingId === id) resetComposer();
+    save(); renderAll();
+    setMsg('Line deleted.');
+  }
+
+  function onSubmit(ev) {
+    ev.preventDefault();
+    var t = clean($('t').value);
+    if (!t) { setMsg('Finish the sentence first.', true); $('t').focus(); return; }
+    if (editingId) {
+      var e = entries.find(function (x) { return x.id === editingId; });
+      if (e) e.text = t;
+      setMsg('Change saved.');
+    } else {
+      entries.push({ id: uid(), text: t, ts: Date.now() });
+      setMsg('Added. Thank You, Lord.');
+      hideBanner();
+    }
+    resetComposer();
+    save(); renderAll();
+    $('t').focus();
+  }
+
+  function exportText() {
+    var sorted = entries.slice().sort(function (a, b) { return a.ts - b.ts; });
+    var out = ['Are You not the one? My thanksgiving list', ''];
+    var lastKey = ''; var n = 0;
+    sorted.forEach(function (e) {
+      var k = dayKey(e.ts);
+      if (k !== lastKey) {
+        if (lastKey) out.push('');
+        var parts = k.split('-').map(Number);
+        out.push(new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }));
+        lastKey = k;
+      }
+      n++;
+      out.push(n + '. ' + STEM + ' ' + e.text + '?');
+    });
+    return out.join('\n');
+  }
+
+  /* ---------- Export: image, PDF and copy ---------- */
+  var exportFiles = null;
+  var exportRun = 0;
+  var PW = 1240, PH = 1754, MX = 110, NUM_W = 90, LH = 52, LIMIT = PH - 170;
+  var SERIF = '"Newsreader", Georgia, "Times New Roman", serif';
+  var SANS = '"Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif';
+
+  function fontFor(stem) { return (stem ? 'italic ' : '') + '400 36px ' + SERIF; }
+
+  function cssVar(name, fallback) {
+    var v = '';
+    try { v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); } catch (e) { /* use fallback */ }
+    return v || fallback;
+  }
+  function exportColors() {
+    return {
+      paper: cssVar('--ex-paper', '#FFFFFF'),
+      ink: cssVar('--ex-ink', '#1B1844'),
+      muted: cssVar('--ex-muted', '#625F85'),
+      line: cssVar('--ex-line', '#D9D8E8'),
+      accent: cssVar('--ex-accent', '#E5AE35'),
+      accentInk: cssVar('--ex-accent-ink', '#855600'),
+      band: cssVar('--ex-band', '#1B1844'),
+      bandInk: cssVar('--ex-band-ink', '#FFFFFF'),
+      eyebrow: cssVar('--ex-eyebrow', '#9CEFF6')
+    };
+  }
+
+  function keyDate(key) {
+    var p = key.split('-').map(Number);
+    return new Date(p[0], p[1] - 1, p[2]);
+  }
+  function fullDate(key) {
+    return keyDate(key).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+  function shortDate(key) {
+    return keyDate(key).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function breakLong(ctx, w, maxW) {
+    var out = []; var cur = '';
+    Array.from(w).forEach(function (ch) {
+      if (cur && ctx.measureText(cur + ch).width > maxW) { out.push(cur); cur = ch; } else { cur += ch; }
+    });
+    if (cur) out.push(cur);
+    return out;
+  }
+
+  function wrapWords(ctx, text, maxW) {
+    var words = [];
+    STEM.split(' ').forEach(function (w) { words.push({ w: w, stem: true }); });
+    var rest = text.split(' ');
+    rest.forEach(function (w, i) { words.push({ w: i === rest.length - 1 ? w + '?' : w, stem: false }); });
+    var lines = []; var line = []; var x = 0;
+    function flush() { if (line.length) lines.push(line); line = []; x = 0; }
+    words.forEach(function (o) {
+      ctx.font = fontFor(o.stem);
+      var sp = ctx.measureText(' ').width;
+      var pieces = [o.w];
+      if (ctx.measureText(o.w).width > maxW) pieces = breakLong(ctx, o.w, maxW);
+      pieces.forEach(function (p, pi) {
+        var ww = ctx.measureText(p).width;
+        if (line.length && x + ww > maxW) flush();
+        line.push({ w: p, stem: o.stem, x: x });
+        x += ww + (pi === pieces.length - 1 ? sp : 0);
+        if (pi < pieces.length - 1) flush();
+      });
+    });
+    flush();
+    return lines;
+  }
+
+  function layoutPages(ctx) {
+    var sorted = entries.slice().sort(function (a, b) { return a.ts - b.ts; });
+    var counts = {};
+    sorted.forEach(function (e) { var k = dayKey(e.ts); counts[k] = (counts[k] || 0) + 1; });
+    var textW = PW - 2 * MX - NUM_W;
+    var pages = []; var cur = null; var y = 0; var lastKey = '';
+    function newPage() {
+      cur = { first: pages.length === 0, items: [] };
+      pages.push(cur);
+      y = cur.first ? 520 : 210;
+    }
+    newPage();
+    sorted.forEach(function (e, idx) {
+      var key = dayKey(e.ts);
+      var lines = wrapWords(ctx, e.text, textW);
+      var h = lines.length * LH + 38;
+      var needHead = key !== lastKey;
+      var cont = false;
+      if (y + (needHead ? 96 : 0) + h > LIMIT && cur.items.length) {
+        newPage();
+        if (!needHead) { needHead = true; cont = true; }
+      }
+      if (needHead) {
+        cur.items.push({ t: 'day', y: y, label: fullDate(key) + (cont ? ' (continued)' : ''), count: counts[key] });
+        y += 96;
+      }
+      cur.items.push({ t: 'line', y: y, n: idx + 1, lines: lines, h: h });
+      y += h;
+      lastKey = key;
+    });
+    return pages;
+  }
+
+  function spaced(ctx, text, x, y, gap) {
+    for (var i = 0; i < text.length; i++) {
+      ctx.fillText(text[i], x, y);
+      x += ctx.measureText(text[i]).width + gap;
+    }
+  }
+
+  function drawSun(ctx, cx, cy, r, color) {
+    ctx.save();
+    ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineCap = 'round'; ctx.lineWidth = Math.max(3, r * 0.1);
+    ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 2 * Math.PI); ctx.closePath(); ctx.fill();
+    for (var i = 1; i <= 7; i++) {
+      var a = Math.PI + i * Math.PI / 8;
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(a) * r * 1.35, cy + Math.sin(a) * r * 1.35);
+      ctx.lineTo(cx + Math.cos(a) * r * 1.8, cy + Math.sin(a) * r * 1.8);
+      ctx.stroke();
+    }
+    ctx.beginPath(); ctx.moveTo(cx - r * 1.5, cy); ctx.lineTo(cx + r * 1.5, cy); ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawPage(ctx, page, index, total, C, meta) {
+    ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+    ctx.fillStyle = C.paper; ctx.fillRect(0, 0, PW, PH);
+    var bandH = page.first ? 360 : 118;
+    ctx.fillStyle = C.band; ctx.fillRect(0, 0, PW, bandH);
+    ctx.fillStyle = C.accent; ctx.fillRect(0, bandH, PW, 8);
+    if (page.first) {
+      drawSun(ctx, PW - MX - 90, 268, 58, C.accent);
+      ctx.fillStyle = C.eyebrow; ctx.font = '600 22px ' + SANS;
+      spaced(ctx, 'THANKSGIVING JOURNAL', MX, 118, 5);
+      ctx.font = 'italic 400 88px ' + SERIF;
+      var tx = MX;
+      [['Are You not ', C.bandInk], ['the one', C.accent], ['?', C.bandInk]].forEach(function (p) {
+        ctx.fillStyle = p[1]; ctx.fillText(p[0], tx, 238); tx += ctx.measureText(p[0]).width;
+      });
+      ctx.fillStyle = C.muted; ctx.font = '400 28px ' + SANS;
+      ctx.fillText(meta.sub, MX, 436);
+    } else {
+      ctx.fillStyle = C.bandInk; ctx.font = 'italic 400 46px ' + SERIF;
+      ctx.fillText('Are You not the one?', MX, 76);
+    }
+
+    page.items.forEach(function (it) {
+      if (it.t === 'day') {
+        ctx.fillStyle = C.ink; ctx.font = '600 28px ' + SANS; ctx.textAlign = 'left';
+        ctx.fillText(it.label, MX, it.y + 54);
+        ctx.textAlign = 'right'; ctx.fillStyle = C.muted; ctx.font = '400 24px ' + SANS;
+        ctx.fillText(it.count + (it.count === 1 ? ' line' : ' lines'), PW - MX, it.y + 54);
+        ctx.textAlign = 'left';
+        ctx.fillStyle = C.ink; ctx.fillRect(MX, it.y + 70, PW - 2 * MX, 3);
+      } else {
+        ctx.fillStyle = C.accentInk; ctx.font = '400 32px ' + SERIF; ctx.textAlign = 'right';
+        ctx.fillText(String(it.n), MX + NUM_W - 24, it.y + 36);
+        ctx.textAlign = 'left';
+        it.lines.forEach(function (ln, li) {
+          ln.forEach(function (wd) {
+            ctx.font = fontFor(wd.stem);
+            ctx.fillStyle = wd.stem ? C.muted : C.ink;
+            ctx.fillText(wd.w, MX + NUM_W + wd.x, it.y + 36 + li * LH);
+          });
+        });
+        ctx.fillStyle = C.line; ctx.fillRect(MX, it.y + it.h - 14, PW - 2 * MX, 2);
+      }
+    });
+
+    ctx.fillStyle = C.line; ctx.fillRect(MX, PH - 112, PW - 2 * MX, 2);
+    ctx.fillStyle = C.muted; ctx.font = '500 22px ' + SANS; ctx.textAlign = 'left';
+    ctx.fillText('Are You Not The One', MX, PH - 66);
+    ctx.textAlign = 'right';
+    ctx.fillText('Page ' + (index + 1) + ' of ' + total, PW - MX, PH - 66);
+    ctx.textAlign = 'left';
+  }
+
+  function toBlob(canvas, type, quality) {
+    return new Promise(function (resolve, reject) {
+      canvas.toBlob(function (b) { if (b) resolve(b); else reject(new Error('blob')); }, type, quality);
+    });
+  }
+
+  function pad10(n) { var s = String(n); while (s.length < 10) s = '0' + s; return s; }
+
+  function buildPdf(jpgs, w, h) {
+    var enc = new TextEncoder();
+    var chunks = []; var offsets = []; var pos = 0;
+    function push(x) {
+      var b = typeof x === 'string' ? enc.encode(x) : x;
+      chunks.push(b); pos += b.length;
+    }
+    var n = jpgs.length;
+    var PWpt = 595.28, PHpt = 841.89;
+    push('%PDF-1.4\n');
+    push(new Uint8Array([0x25, 0xE2, 0xE3, 0xCF, 0xD3, 0x0A]));
+    offsets[1] = pos; push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+    var kids = [];
+    for (var i = 0; i < n; i++) kids.push((3 + i * 3) + ' 0 R');
+    offsets[2] = pos; push('2 0 obj\n<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + n + ' >>\nendobj\n');
+    for (var j = 0; j < n; j++) {
+      var pg = 3 + j * 3, ct = pg + 1, im = pg + 2;
+      offsets[pg] = pos;
+      push(pg + ' 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PWpt + ' ' + PHpt + '] /Resources << /XObject << /Im0 ' + im + ' 0 R >> /ProcSet [/PDF /ImageC] >> /Contents ' + ct + ' 0 R >>\nendobj\n');
+      var content = 'q ' + PWpt + ' 0 0 ' + PHpt + ' 0 0 cm /Im0 Do Q';
+      offsets[ct] = pos;
+      push(ct + ' 0 obj\n<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream\nendobj\n');
+      offsets[im] = pos;
+      push(im + ' 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + w + ' /Height ' + h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpgs[j].length + ' >>\nstream\n');
+      push(jpgs[j]);
+      push('\nendstream\nendobj\n');
+    }
+    var total = 3 + n * 3;
+    var xrefPos = pos;
+    var xr = 'xref\n0 ' + total + '\n0000000000 65535 f \n';
+    for (var k = 1; k < total; k++) xr += pad10(offsets[k]) + ' 00000 n \n';
+    push(xr);
+    push('trailer\n<< /Size ' + total + ' /Root 1 0 R >>\nstartxref\n' + xrefPos + '\n%%EOF\n');
+    return new Blob(chunks, { type: 'application/pdf' });
+  }
+
+  async function loadFonts() {
+    if (!document.fonts || !document.fonts.load) return;
+    var wanted = ['400 36px "Newsreader"', 'italic 400 36px "Newsreader"', 'italic 400 88px "Newsreader"', '600 22px "Hanken Grotesk"', '400 28px "Hanken Grotesk"', '500 22px "Hanken Grotesk"'];
+    var all = Promise.all(wanted.map(function (f) { return document.fonts.load(f).catch(function () {}); }));
+    await Promise.race([all, new Promise(function (r) { setTimeout(r, 2500); })]);
+  }
+
+  async function buildExport(onProgress) {
+    await loadFonts();
+    var canvas = document.createElement('canvas');
+    canvas.width = PW; canvas.height = PH;
+    var ctx = canvas.getContext('2d');
+    var pages = layoutPages(ctx);
+    var C = exportColors();
+    var sorted = entries.slice().sort(function (a, b) { return a.ts - b.ts; });
+    var firstKey = dayKey(sorted[0].ts), lastKey = dayKey(sorted[sorted.length - 1].ts);
+    var range = firstKey === lastKey ? shortDate(firstKey) : shortDate(firstKey) + ' to ' + shortDate(lastKey);
+    var meta = { sub: sorted.length + (sorted.length === 1 ? ' line' : ' lines') + ' of thanks · ' + range };
+    var pngs = []; var jpgs = [];
+    for (var i = 0; i < pages.length; i++) {
+      drawPage(ctx, pages[i], i, pages.length, C, meta);
+      pngs.push(await toBlob(canvas, 'image/png'));
+      var jb = await toBlob(canvas, 'image/jpeg', 0.92);
+      jpgs.push(new Uint8Array(await jb.arrayBuffer()));
+      if (onProgress) onProgress({ done: i + 1, total: pages.length });
+      await new Promise(function (r) { setTimeout(r, 0); });
+    }
+    var base = 'are-you-not-the-one';
+    var images = pngs.map(function (b, i) {
+      return new File([b], pngs.length === 1 ? base + '.png' : base + '-' + (i + 1) + '.png', { type: 'image/png' });
+    });
+    var pdf = new File([buildPdf(jpgs, PW, PH)], base + '.pdf', { type: 'application/pdf' });
+    return { pdf: pdf, images: images, pages: pages.length };
+  }
+
+  function setExportButtons(on) {
+    $('saveImg').disabled = !on;
+    $('savePdf').disabled = !on;
+  }
+
+  function prepareExport() {
+    var run = ++exportRun;
+    exportFiles = null;
+    setExportButtons(false);
+    var m = $('exportMsg');
+    if (!entries.length) { m.textContent = 'Add a line to your list first.'; return; }
+    m.textContent = 'Preparing your pages…';
+    buildExport(function (p) {
+      if (run === exportRun) m.textContent = 'Preparing page ' + p.done + ' of ' + p.total + '…';
+    }).then(function (res) {
+      if (run !== exportRun) return;
+      exportFiles = res; setExportButtons(true);
+      m.textContent = 'Ready: ' + res.pages + (res.pages === 1 ? ' page.' : ' pages. Saving as image gives one image per page.');
+    }, function () {
+      if (run !== exportRun) return;
+      m.textContent = 'Could not make the image or PDF on this device. Use Copy text instead.';
+    });
+  }
+
+  function downloadFiles(files) {
+    var m = $('exportMsg');
+    files.forEach(function (f, i) {
+      setTimeout(function () {
+        var url = URL.createObjectURL(f);
+        var a = document.createElement('a');
+        a.href = url; a.download = f.name;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      }, i * 400);
+    });
+    m.textContent = files.length > 1 ? 'Saving ' + files.length + ' images to your downloads.' : 'Saved to your downloads.';
+  }
+
+  function deliver(files) {
+    var m = $('exportMsg');
+    var canShare = false;
+    try { canShare = !!(navigator.canShare && navigator.canShare({ files: files })); } catch (e) { canShare = false; }
+    if (canShare) {
+      navigator.share({ files: files, title: 'Are You not the one?' }).then(function () {
+        m.textContent = 'Done.';
+      }, function (err) {
+        if (err && err.name === 'AbortError') { m.textContent = ''; return; }
+        downloadFiles(files);
+      });
+      return;
+    }
+    downloadFiles(files);
+  }
+
+  function openExport() {
+    $('exportText').value = exportText();
+    $('exportMsg').textContent = '';
+    $('remPanel').hidden = true;
+    $('exportPanel').hidden = false;
+    $('exportPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    prepareExport();
+  }
+
+  function copyExport() {
+    var ta = $('exportText'); var m = $('exportMsg');
+    var fallback = function () {
+      ta.focus(); ta.select();
+      m.textContent = 'Your list is selected. Copy it from your keyboard or the menu.';
+    };
+    try {
+      navigator.clipboard.writeText(ta.value).then(function () {
+        m.textContent = 'Copied. Paste it into Notes, WhatsApp or a document.';
+      }, fallback);
+    } catch (e) { fallback(); }
+  }
+
+  function showRt() {
+    var e = rtItems[rtIndex];
+    var p = $('rtText'); p.replaceChildren();
+    p.appendChild(el('span', 'pre', STEM));
+    p.appendChild(el('span', 'rest', e.text + '?'));
+    $('rtCount').textContent = (rtIndex + 1) + ' of ' + rtItems.length;
+    $('rtPrev').disabled = rtIndex === 0;
+    $('rtNext').disabled = rtIndex === rtItems.length - 1;
+  }
+  function openRt() {
+    rtItems = entries.slice().sort(function (a, b) { return a.ts - b.ts; });
+    if (!rtItems.length) return;
+    rtIndex = 0;
+    lastFocus = document.activeElement;
+    showRt();
+    $('rt').hidden = false;
+    $('app').inert = true;
+    $('rtNext').focus();
+  }
+  function closeRt() {
+    $('rt').hidden = true;
+    $('app').inert = false;
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  function stepRt(d) {
+    var n = rtIndex + d;
+    if (n < 0 || n >= rtItems.length) return;
+    rtIndex = n; showRt();
+  }
+
+  /* ---------- Reminders ---------- */
+  var SKEY = 'aytno.settings.v1';
+  var PRESETS = [
+    'Count your blessings, name them one by one.',
+    'Don’t forget to give God thanks today.',
+    'Are You not the one who has been faithful? Write it down.',
+    'Pause for a moment and thank Him for one thing right now.'
+  ];
+  var DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
+  var DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var settings = { on: false, days: [true, true, true, true, true, true, true], times: ['07:00'], msg: 0, custom: '', shown: {} };
+
+  function validTime(t) { return typeof t === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(t); }
+  function parseTime(t) { var p = t.split(':'); return [Number(p[0]), Number(p[1])]; }
+  function timeOn(date, t) { var p = parseTime(t); return new Date(date.getFullYear(), date.getMonth(), date.getDate(), p[0], p[1]); }
+  function timeLabel(date) { return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }); }
+
+  function loadSettings() {
+    try {
+      var raw = localStorage.getItem(SKEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (!s || typeof s !== 'object') return;
+      settings.on = s.on === true;
+      if (Array.isArray(s.days) && s.days.length === 7) settings.days = s.days.map(function (x) { return x === true; });
+      if (Array.isArray(s.times)) {
+        var ts = s.times.filter(validTime).slice(0, 3);
+        if (ts.length) settings.times = ts;
+      }
+      if (typeof s.msg === 'number' && s.msg >= -1 && s.msg < PRESETS.length) settings.msg = s.msg;
+      if (typeof s.custom === 'string') settings.custom = s.custom.slice(0, 120);
+      if (s.shown && typeof s.shown === 'object') settings.shown = s.shown;
+    } catch (e) { /* keep defaults */ }
+  }
+  function saveSettings() {
+    try { localStorage.setItem(SKEY, JSON.stringify(settings)); } catch (e) { /* works for this visit only */ }
+  }
+  function currentMessage() {
+    if (settings.msg === -1 && settings.custom.trim()) return settings.custom.trim();
+    return PRESETS[settings.msg >= 0 ? settings.msg : 0];
+  }
+  function markPastShown() {
+    var now = new Date(); var today = dayKey(now.getTime());
+    settings.times.forEach(function (t) { if (timeOn(now, t) <= now) settings.shown[today + 'T' + t] = true; });
+  }
+
+  function nextText() {
+    if (!settings.on) return 'Reminders are off.';
+    if (!settings.days.some(Boolean) || !settings.times.length) return 'Pick at least one day and one time.';
+    var now = new Date();
+    var times = settings.times.slice().sort();
+    for (var off = 0; off < 8; off++) {
+      var d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + off);
+      if (!settings.days[d.getDay()]) continue;
+      for (var i = 0; i < times.length; i++) {
+        var at = timeOn(d, times[i]);
+        if (at > now) {
+          var when = off === 0 ? 'Today' : off === 1 ? 'Tomorrow' : d.toLocaleDateString(undefined, { weekday: 'long' });
+          return 'Next reminder: ' + when + ' at ' + timeLabel(at) + ' (while the app is open).';
+        }
+      }
+    }
+    return '';
+  }
+
+  function renderRem() {
+    $('rem').textContent = settings.on ? 'Reminders: on' : 'Reminders';
+    $('remOn').checked = settings.on;
+    $('remBody').hidden = !settings.on;
+
+    var days = $('remDays'); days.replaceChildren();
+    DAY_ORDER.forEach(function (idx) {
+      var b = el('button', 'chip', DAY_NAMES[idx]); b.type = 'button';
+      b.setAttribute('aria-pressed', settings.days[idx] ? 'true' : 'false');
+      b.addEventListener('click', function () {
+        settings.days[idx] = !settings.days[idx];
+        saveSettings(); renderRem();
+      });
+      days.appendChild(b);
+    });
+
+    var times = $('remTimes'); times.replaceChildren();
+    settings.times.forEach(function (t, i) {
+      var row = el('div', 'time-row');
+      var inp = document.createElement('input');
+      inp.type = 'time'; inp.id = 'remTime' + i; inp.value = t;
+      inp.setAttribute('aria-label', 'Reminder time ' + (i + 1));
+      inp.addEventListener('change', function () {
+        if (!validTime(inp.value)) { renderRem(); return; }
+        settings.times[i] = inp.value;
+        settings.times = settings.times.filter(function (x, j, a) { return a.indexOf(x) === j; });
+        markPastShown(); saveSettings(); renderRem();
+      });
+      row.appendChild(inp);
+      if (settings.times.length > 1) {
+        var rm = el('button', 'link', 'Remove'); rm.type = 'button';
+        rm.addEventListener('click', function () {
+          settings.times.splice(i, 1); saveSettings(); renderRem();
+        });
+        row.appendChild(rm);
+      }
+      times.appendChild(row);
+    });
+    $('addTime').disabled = settings.times.length >= 3;
+
+    var sel = $('remMsg');
+    if (!sel.options.length) {
+      PRESETS.forEach(function (p, i) { var o = document.createElement('option'); o.value = String(i); o.textContent = p; sel.appendChild(o); });
+      var oc = document.createElement('option'); oc.value = '-1'; oc.textContent = 'Write my own…'; sel.appendChild(oc);
+    }
+    sel.value = String(settings.msg);
+    var cu = $('remCustom');
+    cu.hidden = settings.msg !== -1;
+    if (document.activeElement !== cu) cu.value = settings.custom;
+    $('remNext').textContent = nextText();
+  }
+
+  function showBanner(msg) {
+    $('bannerText').textContent = msg;
+    $('banner').hidden = false;
+    $('banner').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  function hideBanner() { $('banner').hidden = true; }
+
+  function checkDue() {
+    if (!settings.on) return;
+    var now = new Date(); var today = dayKey(now.getTime());
+    var changed = false;
+    Object.keys(settings.shown).forEach(function (k) {
+      if (k.indexOf(today) !== 0) { delete settings.shown[k]; changed = true; }
+    });
+    if (settings.days[now.getDay()]) {
+      var due = settings.times.filter(function (t) {
+        return timeOn(now, t) <= now && !settings.shown[today + 'T' + t];
+      }).sort();
+      if (due.length) {
+        due.forEach(function (t) { settings.shown[today + 'T' + t] = true; });
+        changed = true;
+        var latestAt = timeOn(now, due[due.length - 1]).getTime();
+        var wroteSince = entries.some(function (e) { return e.ts >= latestAt; });
+        if (!wroteSince) showBanner(currentMessage());
+      }
+    }
+    if (changed) saveSettings();
+    if (!$('remPanel').hidden) $('remNext').textContent = nextText();
+  }
+
+  function initRem() {
+    loadSettings();
+    renderRem();
+    $('remOn').addEventListener('change', function () {
+      settings.on = $('remOn').checked;
+      if (settings.on) markPastShown();
+      saveSettings(); renderRem();
+    });
+    $('addTime').addEventListener('click', function () {
+      if (settings.times.length >= 3) return;
+      var cand = ['07:00', '12:00', '21:00', '18:00', '09:00'].filter(function (t) { return settings.times.indexOf(t) === -1; })[0];
+      settings.times.push(cand);
+      markPastShown(); saveSettings(); renderRem();
+    });
+    $('remMsg').addEventListener('change', function () {
+      settings.msg = Number($('remMsg').value);
+      saveSettings(); renderRem();
+      if (settings.msg === -1) $('remCustom').focus();
+    });
+    $('remCustom').addEventListener('input', function () {
+      settings.custom = $('remCustom').value.slice(0, 120);
+      saveSettings();
+    });
+    $('remTest').addEventListener('click', function () { showBanner(currentMessage()); });
+    $('rem').addEventListener('click', function () {
+      $('exportPanel').hidden = true;
+      var p = $('remPanel'); p.hidden = !p.hidden;
+      if (!p.hidden) { renderRem(); p.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    });
+    $('closeRem').addEventListener('click', function () { $('remPanel').hidden = true; });
+    $('bannerLater').addEventListener('click', hideBanner);
+    $('bannerWrite').addEventListener('click', function () {
+      hideBanner();
+      $('f').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      $('t').focus();
+    });
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) checkDue(); });
+    setInterval(checkDue, 30000);
+    checkDue();
+  }
+
+  function init() {
+    load();
+    renderStoreNote();
+
+    STARTERS.forEach(function (s) {
+      var b = el('button', 'chip', s); b.type = 'button';
+      b.addEventListener('click', function () {
+        var t = $('t'); t.value = s; t.focus();
+        t.setSelectionRange(t.value.length, t.value.length);
+      });
+      $('chips').appendChild(b);
+    });
+
+    $('f').addEventListener('submit', onSubmit);
+    $('t').addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); $('f').requestSubmit(); }
+    });
+    $('cancel').addEventListener('click', function () { resetComposer(); setMsg(''); });
+    $('exp').addEventListener('click', openExport);
+    $('closeExport').addEventListener('click', function () { $('exportPanel').hidden = true; });
+    $('copy').addEventListener('click', copyExport);
+    $('saveImg').addEventListener('click', function () { if (exportFiles) deliver(exportFiles.images); });
+    $('savePdf').addEventListener('click', function () { if (exportFiles) deliver([exportFiles.pdf]); });
+    $('read').addEventListener('click', openRt);
+    $('rtClose').addEventListener('click', closeRt);
+    $('rtPrev').addEventListener('click', function () { stepRt(-1); });
+    $('rtNext').addEventListener('click', function () { stepRt(1); });
+    document.addEventListener('keydown', function (ev) {
+      if ($('rt').hidden) return;
+      if (ev.key === 'Escape') closeRt();
+      else if (ev.key === 'ArrowRight') stepRt(1);
+      else if (ev.key === 'ArrowLeft') stepRt(-1);
+    });
+
+    renderAll();
+    initRem();
+  }
+
+  init();
+})();
+</script>
+
+<script>
+(function () {
+  var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone;
+  var tipEl = document.getElementById('installTip');
+  if (standalone) { tipEl.hidden = true; }
+  var deferred = null;
+  var btn = document.getElementById('installBtn');
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); deferred = e; btn.hidden = false;
+  });
+  btn.addEventListener('click', function () {
+    if (!deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function () { deferred = null; btn.hidden = true; }, function () {});
+  });
+  window.addEventListener('appinstalled', function () { tipEl.hidden = true; });
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
